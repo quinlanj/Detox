@@ -222,10 +222,30 @@ static void __setupRNSupport()
 }
 
 + (void)waitForReactNativeLoadWithCompletionHandler:(void (^)(void))handler
+{	
+	NSString *notification = @"RCTJavaScriptDidLoadNotification";
+	[self registerOneTimeNotification:notification handler:handler];
+	
+	Class exVersions = NSClassFromString(@"EXVersions");
+	if(exVersions == nil)
+	{
+		return;
+	}
+	
+	NSDictionary *versions=[[exVersions sharedInstance] valueForKey:@"versions"];
+	NSArray *sdkVersions = versions[@"sdkVersions"];
+	for (NSString *supportedVersion in sdkVersions) {
+		NSString *underscoredVersion = [supportedVersion stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+		[self registerOneTimeNotification:[NSString stringWithFormat: @"ABI%@%@", underscoredVersion, notification] handler:handler];
+	}
+}
+
++ (void) registerOneTimeNotification:(NSNotificationName) name handler:(void (^)(void))handler
 {
 	__block __weak id observer;
 	
-	observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"RCTJavaScriptDidLoadNotification" object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+	observer = [[NSNotificationCenter defaultCenter] addObserverForName:name object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+		
 		if(handler)
 		{
 			handler();
