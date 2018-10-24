@@ -21,11 +21,15 @@ static void (*__orig_loadBundleAtURL_onProgress_onComplete)(id self, SEL _cmd, N
 static void __dtx_loadBundleAtURL_onProgress_onComplete(id self, SEL _cmd, NSURL* url, id onProgress, RCTSourceLoadBlock onComplete)
 {
 	atomic_fetch_add(&__numberOfLoadingRN, 1);
+	NSLog(@"INCREMENT RES: %jd \n %@",atomic_load(&__numberOfLoadingRN), [NSThread callStackSymbols]);
 	__orig_loadBundleAtURL_onProgress_onComplete(self, _cmd, url, onProgress, onComplete);
 	
 	[ReactNativeSupport waitForReactNativeLoadWithCompletionHandler:^{
+		NSLog(@"DECREMENT");
 		atomic_fetch_sub(&__numberOfLoadingRN, 1);
+		NSLog(@"DECREMENT RES: %jd",atomic_load(&__numberOfLoadingRN));
 	}];
+	NSLog(@"Registered Handler");
 }
 
 @implementation WXRNLoadIdlingResource

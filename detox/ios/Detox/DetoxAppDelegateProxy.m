@@ -242,6 +242,7 @@ static void __copyMethods(Class orig, Class target)
 #endif
 	
 	NSURL* openURLOverride = [self __dtx_URLOverride];
+	//NSURL* openURLOverride = [NSURL URLWithString:@"exp://192.168.1.253:8000/ios-index.json"];
 	if(openURLOverride)
 	{
 		rv[UIApplicationLaunchOptionsURLKey] = openURLOverride;

@@ -107,6 +107,7 @@ static void detoxConditionalInit()
 - (void)_appDidLaunch:(NSNotification*)note
 {
 	[EarlGrey detox_safeExecuteSync:^{
+		NSLog(@"CONGRATULATIONS!");
 		self.isReady = YES;
 		[self _sendGeneralReadyMessage];
 	}];

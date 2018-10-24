@@ -16,6 +16,7 @@ class DetoxServer {
       let role;
       ws.on('message', (str) => {
         try {
+          console.log(`Server: got ${str}`);
           const action = JSON.parse(str);
           if (!action.type) {
             return;
@@ -56,6 +57,8 @@ class DetoxServer {
 
   sendToOtherRole(sessionId, role, action) {
     const otherRole = role === 'testee' ? 'tester' : 'testee';
+    console.log(`Sending message to role: ${otherRole}`);
+    console.log(this.sessions);
     const ws = _.get(this.sessions, [sessionId, otherRole]);
     if (ws) {
       this.sendAction(ws, action);
